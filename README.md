@@ -3,9 +3,9 @@
 
 **About**
 
-Plugin adds one task named **modifySources** to the  group **modification** of type com.steammachine.org.gradle.substitute.plugin.FileModifier to the project.
-Tasks of that type can be called independently. A task scans project source sourceSets and replaces found `tokens` 
-with other tokens according to applied substitution rules.
+Plugin adds one task named **modifysources** to the group **modification** of type com.steammachine.org.gradle.substitute.plugin.FileModifier to the project.
+Tasks of that type can be called independently, without plugin. A task scans project source sourceSets and replaces found `tokens` 
+with other `tokens` according to applied substitution rules.
 
 
 
@@ -45,10 +45,16 @@ com.steammachine.org.gradle.substitute.plugin.ModificationRule
 ```
 and has public no-args constructor
 
-A modification rule is applied using `rule` method of task  
+A modification rule is applied using `rule` method of task.  
 
-in example given below defined and applied DateTimeSubstitution rule
-the rule finds #DATE `token` in source code base and replaces it with current time in format dd.MM.yyyy
+```groovy 
+    modifysources.rule(ARuleType) {
+        /* here goes a configuration block */
+    }
+```
+
+In example given below defined and applied DateTimeSubstitution rule searches #DATE `token` in project sources and replaces it with current time in format `dd.MM.yyyy`. 
+
 ```groovy 
 class DateTimeSubstitution implements ModificationRule {
     String find = '#DATE'
@@ -88,6 +94,12 @@ Predefined modification rules are situated in package
 ```groovy 
 com.steammachine.org.gradle.substitute.plugin.predefinedsubstitutions
 ```
+
+**Task properties**
+
+The task FileModifier (com.steammachine.org.gradle.substitute.plugin.FileModifier) does not have any other settings.
+
+
 
 
 
