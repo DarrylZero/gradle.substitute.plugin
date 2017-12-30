@@ -12,16 +12,21 @@ buildscript {
 }
 
 plugins {
+    id 'groovy'
+    id 'java'
+    id 'maven-publish'
+    id "maven"
     id "org.sonarqube" version "2.5"
 }
-
-apply plugin: 'groovy'
-apply plugin: 'java'
-apply plugin: 'maven-publish'
-apply plugin: "maven"
 apply plugin: 'com.steammachine.org.gradle.properties.plugins'
+apply plugin: 'jacoco'
 
-
+sonarqube {
+    properties {
+        property 'sonar.jacoco.reportPath', "$buildDir/jacoco/test.exec"
+        property 'sonar.tests', "$buildDir/classes/test"
+    }
+}
 
 repositories {
     mavenCentral()
@@ -35,6 +40,20 @@ dependencies {
 sourceCompatibility	 = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
+
+//sonarqube {
+//    properties {
+//        property 'sonar.jacoco.reportPaths', file('build/jacoco/test.exec').absolutePath
+//    }
+//}
+
+//test {
+//    jacoco {
+//        append = false
+//        destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
+//        classDumpDir = file("$buildDir/jacoco/classpathdumps")
+//    }
+//}
 
 auxprops.set('deploy') {
     propertyFile file('publish.properties')
