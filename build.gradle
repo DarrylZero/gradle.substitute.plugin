@@ -40,26 +40,9 @@ dependencies {
 sourceCompatibility	 = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-
-//sonarqube {
-//    properties {
-//        property 'sonar.jacoco.reportPaths', file('build/jacoco/test.exec').absolutePath
-//    }
-//}
-
-//test {
-//    jacoco {
-//        append = false
-//        destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
-//        classDumpDir = file("$buildDir/jacoco/classpathdumps")
-//    }
-//}
-
 auxprops.set('deploy') {
     propertyFile file('publish.properties')
 }
-
-
 
 group = deploy.group
 version = deploy.version
