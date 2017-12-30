@@ -7,7 +7,7 @@ class ResourceTest {
 
     @Test
     void testFindNecessaryResources() {
-        ResourceTestss.class.classLoader.
+        ResourceTest.class.classLoader.
                 getResourceAsStream('META-INF/gradle-plugins/com.steammachine.org.gradle.substitute.plugin.properties').
                 withCloseable {
                     stream ->
