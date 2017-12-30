@@ -57,6 +57,11 @@ class DateTimeSubstitution implements ModificationRule {
 
 In example given below defined and applied DateTimeSubstitution rule searches #DATE `token` in project sources and replaces it with current time in format `dd.MM.yyyy`. 
 
+A modification rule is applied using `rule` method of task  
+
+in example given below defined and applied DateTimeSubstitution rule
+the rule finds #DATE `token` in source code base and replaces it with current time in format dd.MM.yyyy
+
 ```groovy 
 class DateTimeSubstitution implements ModifyRule {
     String find = '#DATE'
