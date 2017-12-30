@@ -7,6 +7,7 @@ import com.steammachine.org.gradle.substitute.plugin.ModificationRule
  *
  * {@link DirectSubstitution}
  * com.steammachine.org.gradle.substitute.plugin.predefinedsubstitutions.DirectSubstitution
+ * com.steammachine.org.gradle.substitute.plugin.predefinedsubstitutions.DirectSubstitution
  */
 class DirectSubstitution implements ModificationRule {
 
@@ -16,10 +17,18 @@ class DirectSubstitution implements ModificationRule {
     DirectSubstitution() {
     }
 
+    /**
+     *
+     * @param sets a token to find
+     */
     void setFind(String find) {
         this.find = find
     }
 
+    /**
+     *
+     * @param sets a token that found token will be substituted with
+     */
     void setSubstitute(String substitute) {
         this.substitute = substitute
     }

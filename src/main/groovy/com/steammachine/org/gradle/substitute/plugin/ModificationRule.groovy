@@ -1,7 +1,8 @@
 package com.steammachine.org.gradle.substitute.plugin
 
 /**
- *
+ * {@link com.steammachine.org.gradle.substitute.plugin.ModificationRule}
+ * com.steammachine.org.gradle.substitute.plugin.ModificationRule
  */
 interface ModificationRule {
 
