@@ -94,3 +94,11 @@ publishing {
     }
 }
 
+
+//git tag -a v1.4 -m 'my version 1.4'
+task tagCommandLine {
+    doLast{
+        println "git checkout release" + $deploy.version + " -m 'version $deploy.version'"
+        println "git tag -a " + $deploy.version + " -m 'version $deploy.version'"
+    }
+}
