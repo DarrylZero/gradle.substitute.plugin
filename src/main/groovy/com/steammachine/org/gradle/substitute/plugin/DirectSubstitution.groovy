@@ -1,12 +1,9 @@
-package com.steammachine.org.gradle.substitute.plugin.predefinedsubstitutions
-
-import com.steammachine.org.gradle.substitute.plugin.ModificationRule
-
+package com.steammachine.org.gradle.substitute.plugin
 /**
  *
  *
  * {@link DirectSubstitution}
- * com.steammachine.org.gradle.substitute.plugin.predefinedsubstitutions.DirectSubstitution
+ * com.steammachine.org.gradle.substitute.plugin.DirectSubstitution
  */
 class DirectSubstitution implements ModificationRule {
 
