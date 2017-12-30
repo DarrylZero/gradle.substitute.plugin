@@ -1,0 +1,5 @@
+import com.steammachine.org.gradle.substitute.plugin.SubstitutePlugin
+
+apply plugin: com.steammachine.org.gradle.substitute.plugin.SubstitutePlugin
+
+
