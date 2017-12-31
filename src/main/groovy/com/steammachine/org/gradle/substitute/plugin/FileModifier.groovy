@@ -37,11 +37,21 @@ class FileModifier extends ConventionTask {
         }
     }
 
+    /**
+     * Adds a simple rule,  that does not need any configuration
+     *
+     * @param clazz class to create instance [not null]
+     */
     def <T extends ModificationRule> void rule(Class<T> clazz) {
         T instance = clazz.newInstance()
         rules.add(instance)
     }
 
+    /**
+     * Adds a rule class and performs its configuration
+     *
+     * @param clazz class to create instance [not null]
+     */
     def <T extends ModificationRule> void rule(Class<T> clazz, Closure<T> config) {
         T instance = clazz.newInstance()
         ConfigureUtil.configureUsing(config).execute(instance)
