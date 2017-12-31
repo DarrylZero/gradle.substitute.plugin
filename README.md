@@ -80,7 +80,10 @@ class DateTimeSubstitution implements ModificationRule {
     }
 }
 
-modifysources.rule(DateTimeSubstitution)
+modifysources.rule(DateTimeSubstitution) {
+   /* here goes the configuration block for the rule */
+   timeFormat = 'dd.MM.yyyy hh:mm:ss'
+}
 ```
 
 
