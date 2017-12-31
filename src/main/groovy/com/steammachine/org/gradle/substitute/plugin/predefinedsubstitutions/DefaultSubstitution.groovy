@@ -10,12 +10,8 @@ import com.steammachine.org.gradle.substitute.plugin.types.State
  * {@link com.steammachine.org.gradle.substitute.plugin.predefinedsubstitutions.DefaultSubstitution}
  * com.steammachine.org.gradle.substitute.plugin.predefinedsubstitutions.DefaultSubstitution
  */
-@Api(value = State.INCUBATING)
+@Api(value = State.MAINTAINED)
 class DefaultSubstitution implements ModificationRule, FinalInspection {
-
-    @Override
-    void inspect() {
-    }
 
     @Override
     boolean lineMatches(String line) {
@@ -25,6 +21,10 @@ class DefaultSubstitution implements ModificationRule, FinalInspection {
     @Override
     String substitution(String line) {
         ''
+    }
+
+    @Override
+    void inspect() {
     }
 }
 

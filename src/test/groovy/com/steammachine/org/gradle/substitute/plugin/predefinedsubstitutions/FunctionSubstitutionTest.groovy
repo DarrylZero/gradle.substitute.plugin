@@ -22,7 +22,8 @@ class FunctionSubstitutionTest {
         instance.find = 'light'
         instance.operation = { 'LIGHT' }
         Assert.assertTrue(instance.lineMatches(' I would sit alone and watch your light'))
-        Assert.assertEquals('LIGHT', instance.substitution(' I would sit alone and watch your light'))
+        Assert.assertEquals(' I would sit alone and watch your LIGHT',
+                instance.substitution(' I would sit alone and watch your light'))
     }
 
 
