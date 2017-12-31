@@ -1,5 +1,7 @@
 package com.steammachine.org.gradle.substitute.plugin
 
+import com.steammachine.org.gradle.substitute.plugin.types.Api
+import com.steammachine.org.gradle.substitute.plugin.types.State
 import org.gradle.api.internal.ConventionTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.util.ConfigureUtil
@@ -12,12 +14,14 @@ import java.nio.file.StandardCopyOption
  * {@link com.steammachine.org.gradle.substitute.plugin.FileModifier}
  * com.steammachine.org.gradle.substitute.plugin.FileModifier
  */
+@Api(value = State.MAINTAINED)
 class FileModifier extends ConventionTask {
 
     List<ModificationRule> rules = []
 
     @TaskAction
     void perform() {
+
         project.sourceSets.each {
             sourceset ->
                 sourceset.allSource.each {
@@ -26,6 +30,10 @@ class FileModifier extends ConventionTask {
                             modifyFile(source)
                         }
                 }
+        }
+
+        rules.stream().filter { it in FinalInspection }.map { it as FinalInspection }.forEachOrdered {
+            it.inspect()
         }
     }
 

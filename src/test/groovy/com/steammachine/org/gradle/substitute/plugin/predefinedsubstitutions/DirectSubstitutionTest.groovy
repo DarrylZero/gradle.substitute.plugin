@@ -1,4 +1,4 @@
-package com.steammachine.org.gradle.substitute.plugin
+package com.steammachine.org.gradle.substitute.plugin.predefinedsubstitutions
 
 import com.steammachine.org.gradle.substitute.plugin.predefinedsubstitutions.DirectSubstitution
 import org.junit.Assert
@@ -10,6 +10,11 @@ class DirectSubstitutionTest {
     void testNameIntegrity() {
         Assert.assertEquals("com.steammachine.org.gradle.substitute.plugin.predefinedsubstitutions.DirectSubstitution",
                 DirectSubstitution.class.name);
+    }
+
+    @Test
+    void testCreation() {
+        DirectSubstitution.newInstance()
     }
 
     @Test

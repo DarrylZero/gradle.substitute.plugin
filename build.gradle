@@ -101,7 +101,7 @@ task buildandsources(dependsOn: [build, sourceJar])
 //git tag -a v1.4 -m 'my version 1.4'
 task tagCommandLine {
     doLast{
-        println "git checkout release" + $deploy.version + " -m 'version $deploy.version'"
-        println "git tag -a " + $deploy.version + " -m 'version $deploy.version'"
+        println "git checkout release$deploy.version"
+        println "git tag -a v$deploy.version " +  " -m \"version $deploy.version\""
     }
 }
