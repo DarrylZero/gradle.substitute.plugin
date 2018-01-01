@@ -9,7 +9,6 @@ import org.gradle.util.ConfigureUtil
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
-
 /**
  * {@link com.steammachine.org.gradle.substitute.plugin.FileModifier}
  * com.steammachine.org.gradle.substitute.plugin.FileModifier
@@ -17,7 +16,7 @@ import java.nio.file.StandardCopyOption
 @Api(value = State.MAINTAINED)
 class FileModifier extends ConventionTask {
 
-    List<ModificationRule> rules = []
+    List<Object> rules = []
 
     @TaskAction
     void perform() {
@@ -42,9 +41,8 @@ class FileModifier extends ConventionTask {
      *
      * @param clazz class to create instance [not null]
      */
-    def <T extends ModificationRule> void rule(Class<T> clazz) {
-        T instance = clazz.newInstance()
-        rules.add(instance)
+    def <T> void rule(Class<T> clazz) {
+        rules.add(clazz.newInstance())
     }
 
     /**
@@ -52,20 +50,24 @@ class FileModifier extends ConventionTask {
      *
      * @param clazz class to create instance [not null]
      */
-    def <T extends ModificationRule> void rule(Class<T> clazz, Closure<T> config) {
-        T instance = clazz.newInstance()
-        ConfigureUtil.configureUsing(config).execute(instance)
-        rules.add(instance)
+    def <T> void rule(Class<T> clazz, Closure<T> config) {
+        ConfigureUtil.configureUsing(config).execute(rule(clazz))
     }
 
     boolean isModified(File file) {
         new BufferedReader(new InputStreamReader(new FileInputStream(file))).withCloseable {
-            it.lines().anyMatch { line -> matchToAnyRule(line) }
+            reader ->
+                def line
+                int lineNo = 0
+                boolean result = true
+                while ((line = reader.readLine()) != null) {
+                    result = result && matchToAnyRule(line, file, lineNo++)
+                }
         }
     }
 
-    boolean matchToAnyRule(String line) {
-        rules.stream().anyMatch { rule -> rule.lineMatches(line) }
+    boolean matchToAnyRule(String line, File file, int lineNo) {
+        rules.stream().anyMatch { lineMatches(it, line, file, lineNo) }
     }
 
     void modifyFile(File file) {
@@ -75,18 +77,46 @@ class FileModifier extends ConventionTask {
         new BufferedWriter(new OutputStreamWriter(new FileOutputStream(temp))).withCloseable {
             writer ->
                 new BufferedReader(new InputStreamReader(new FileInputStream(file))).withCloseable {
-                    it.lines().each {
-                        line ->
+                    reader ->
+                        int lineNo = 0
+                        def line = ''
+                        while ((line != reader.readLine()) != null) {
                             String[] templine = [line]
-                            if (matchToAnyRule(line)) {
-                                rules.each { templine[0] = it.substitution(templine[0]) }
+                            if (matchToAnyRule(line, file, lineNo)) {
+                                rules.each { templine[0] = substitution(it, templine[0], file) }
                             }
                             writer.writeLine(templine[0])
-                    }
+                            lineNo++
+                        }
                 }
         }
         Files.copy(temp.toPath(), file.toPath(),
                 StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES)
+    }
+
+
+    private static boolean lineMatches(Object rule, String line, File file, int lineNo) {
+        if (rule in ModifyRule) {
+            (rule as ModifyRule).lineMatches(line, file, lineNo)
+        }
+
+        if (rule in ModificationRule) {
+            (rule as ModificationRule).lineMatches(line)
+        }
+
+        false
+    }
+
+    private static String substitution(Object rule, String line, File file) {
+        if (rule in ModificationRule) {
+            (rule as ModificationRule).substitution(line)
+        }
+
+        if (rule in ModifyRule) {
+            (rule as ModifyRule).substitution(line, file)
+        }
+
+        line
     }
 
 }

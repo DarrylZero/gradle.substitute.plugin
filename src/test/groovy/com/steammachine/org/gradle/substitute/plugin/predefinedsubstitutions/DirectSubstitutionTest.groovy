@@ -19,12 +19,15 @@ class DirectSubstitutionTest {
 
     @Test
     void testSmoke() {
+        def file = File.createTempFile('prefix', 'suffix')
+        file.deleteOnExit()
+
         def substitution = new DirectSubstitution()
         substitution.setFind 'Luise'
         substitution.setSubstitute 'Armstrong'
-        Assert.assertEquals(false, substitution.lineMatches('Hello dolly'))
-        Assert.assertEquals(true, substitution.lineMatches('this is Luise dolly'))
-        Assert.assertEquals('this is Armstrong dolly', substitution.substitution('this is Luise dolly'))
+        Assert.assertEquals(false, substitution.lineMatches('Hello dolly', file, 0))
+        Assert.assertEquals(true, substitution.lineMatches('this is Luise dolly', file, 0))
+        Assert.assertEquals('this is Armstrong dolly', substitution.substitution('this is Luise dolly', file))
     }
 
 

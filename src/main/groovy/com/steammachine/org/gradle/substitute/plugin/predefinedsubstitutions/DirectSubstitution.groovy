@@ -34,12 +34,12 @@ class DirectSubstitution extends DefaultSubstitution {
     }
 
     @Override
-    boolean lineMatches(String line) {
+    boolean lineMatches(String line, File file, int lineNo) {
         substitute != null && find != null && line.contains(find)
     }
 
     @Override
-    String substitution(String line) {
+    String substitution(String line, File file) {
         line.replaceAll(find, substitute)
     }
 }

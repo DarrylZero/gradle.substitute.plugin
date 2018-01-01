@@ -16,28 +16,29 @@ import com.steammachine.org.gradle.substitute.plugin.types.State
  * ...
  *
  * Strnig line = ...
- * if (rule.lineMatches(line)) {
+ * if (rule.lineMatches(line, file, 0)) {
  *     Strnig modifiedline = rule.substitution(line)
  *     assert !rule.lineMatches(modifiedline)
  * }
  *
  */
 @Api(value = State.MAINTAINED)
-@Deprecated
-interface ModificationRule {
+interface ModifyRule {
 
     /**
      * Checks if the given line matches
      * @param a line
+     * @param file file object - not null
+     * @param lineNo a line no
      * @return {@code true} if line matched the condition
      */
-    boolean lineMatches(String line)
+    boolean lineMatches(String line, File file, int lineNo)
 
     /**
      *
      * @param line - not null
      * @return modified line
      */
-    String substitution(String line)
+    String substitution(String line, File file)
 
 }

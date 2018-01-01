@@ -20,13 +20,12 @@ class FunctionSubstitution extends DefaultSubstitution {
     }
 
     @Override
-    boolean lineMatches(String line) {
+    boolean lineMatches(String line, File file, int lineNo) {
         find != null && operation != null && line.contains(find)
     }
 
     @Override
-    final String substitution(String line) {
+    String substitution(String line, File file) {
         line.replaceAll(find, operation.apply(line))
     }
-
 }

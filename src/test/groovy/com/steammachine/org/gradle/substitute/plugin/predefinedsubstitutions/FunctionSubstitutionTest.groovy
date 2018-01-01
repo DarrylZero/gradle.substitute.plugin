@@ -18,12 +18,15 @@ class FunctionSubstitutionTest {
 
     @Test
     void testCalc() {
+        def file = File.createTempFile('prefix', 'suffix')
+        file.deleteOnExit()
+
         def instance = FunctionSubstitution.newInstance()
         instance.find = 'light'
         instance.operation = { 'LIGHT' }
-        Assert.assertTrue(instance.lineMatches(' I would sit alone and watch your light'))
+        Assert.assertTrue(instance.lineMatches(' I would sit alone and watch your light', file, 0))
         Assert.assertEquals(' I would sit alone and watch your LIGHT',
-                instance.substitution(' I would sit alone and watch your light'))
+                instance.substitution(' I would sit alone and watch your light', file))
     }
 
 

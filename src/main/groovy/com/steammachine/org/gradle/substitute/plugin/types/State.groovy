@@ -3,7 +3,7 @@ package com.steammachine.org.gradle.substitute.plugin.types
 enum State {
 
     /**
-     * feature is for internal use - can be deleted removed or renamed - do not use in custom code
+     * feature is for internal use - can be deleted removed or renamed - do not use it in custom code
      */
     INTERNAL,
 

@@ -2,6 +2,7 @@ package com.steammachine.org.gradle.substitute.plugin.predefinedsubstitutions
 
 import com.steammachine.org.gradle.substitute.plugin.FinalInspection
 import com.steammachine.org.gradle.substitute.plugin.ModificationRule
+import com.steammachine.org.gradle.substitute.plugin.ModifyRule
 import com.steammachine.org.gradle.substitute.plugin.types.Api
 import com.steammachine.org.gradle.substitute.plugin.types.State
 
@@ -11,15 +12,15 @@ import com.steammachine.org.gradle.substitute.plugin.types.State
  * com.steammachine.org.gradle.substitute.plugin.predefinedsubstitutions.DefaultSubstitution
  */
 @Api(value = State.MAINTAINED)
-class DefaultSubstitution implements ModificationRule, FinalInspection {
+class DefaultSubstitution implements ModifyRule, FinalInspection {
 
     @Override
-    boolean lineMatches(String line) {
-        false
+    boolean lineMatches(String line, File file, int lineNo) {
+        return false
     }
 
     @Override
-    String substitution(String line) {
+    String substitution(String line, File file) {
         ''
     }
 
