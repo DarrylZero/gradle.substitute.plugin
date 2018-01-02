@@ -6,6 +6,7 @@ buildscript {
     dependencies {
         classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M6'
         classpath 'com.steammachine.org:gradle.plugins:0.9.3'
+        classpath 'com.steammachine.org:gradle.copy.plugin:0.9.0'
     }
 }
 
@@ -16,13 +17,23 @@ plugins {
     id "maven"
     id "org.sonarqube" version "2.5"
 }
-apply plugin: 'com.steammachine.org.gradle.properties.plugins'
+apply plugin: 'idea'
 apply plugin: 'jacoco'
+apply plugin: 'com.steammachine.org.gradle.properties.plugins'
+apply plugin: 'com.steammachine.org.gradle.copyresources.plugin'
+
+
+copyresources.copy('copyGroovy') {
+    Copy t ->
+        t.from  file('src/test/groovy')
+        t.into  file('build/classes/test')
+        t.include '**/**resource*', '**/**/build.gradle'
+}
 
 sonarqube {
     properties {
-        property 'sonar.jacoco.reportPath', "$buildDir/jacoco/test.exec"
-        property 'sonar.tests', "$buildDir/classes/test"
+        property 'sonar.jacoco.reportPaths', "$buildDir/jacoco/test.exec"
+//        property 'sonar.tests', "$buildDir/classes/test"
     }
 }
 
@@ -33,9 +44,10 @@ repositories {
 dependencies {
     implementation localGroovy()
     implementation gradleApi()
+    testCompile gradleTestKit()
     testCompile 'junit:junit:4.12'
 }
-sourceCompatibility	 = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 auxprops.set('deploy') {
@@ -93,13 +105,20 @@ publishing {
     }
 }
 
+idea {
+    module {
+        inheritOutputDirs = false
+        outputDir = file('build/classes/main')
+        testOutputDir = file('build/classes/test')
+    }
+}
 
 task buildandsources(dependsOn: [build, sourceJar])
 
 //git tag -a v1.4 -m 'my version 1.4'
 task tagCommandLine {
-    doLast{
+    doLast {
         println "git checkout release$deploy.version"
-        println "git tag -a v$deploy.version " +  " -m \"version $deploy.version\""
+        println "git tag -a v$deploy.version " + " -m \"version $deploy.version\""
     }
 }

@@ -42,4 +42,9 @@ class DirectSubstitution extends DefaultSubstitution {
     String substitution(String line, File file) {
         line.replaceAll(find, substitute)
     }
+
+    @Override
+    String toString() {
+        "DirectSubstitution(find=$find, substitute=$substitute)";
+    }
 }

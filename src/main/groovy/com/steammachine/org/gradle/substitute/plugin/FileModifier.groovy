@@ -16,16 +16,40 @@ import java.nio.file.StandardCopyOption
 @Api(value = State.MAINTAINED)
 class FileModifier extends ConventionTask {
 
-    List<Object> rules = []
+    final List<Object> rules = []
+    final Set<Mode> modes = []
 
     @TaskAction
     void perform() {
+
+
+        if (Mode.DEBUG in modes) {
+            println 'source sets that are used'
+            println ' '
+            println ' '
+
+            project.sourceSets.each {
+                sourceset -> sourceset.allSource.each { println it.absolutePath }
+            }
+
+            println ' '
+            println ' '
+            println "rules that are used $rules"
+        }
 
         project.sourceSets.each {
             sourceset ->
                 sourceset.allSource.each {
                     File source ->
-                        if (isModified(source)) {
+                        if (Mode.DEBUG in modes) {
+                            println "inspecting file $source.absolutePath"
+                        }
+                        def modified = isModified(source)
+                        if (Mode.DEBUG in modes) {
+                            println "file $source.absolutePath modified = $modified"
+                        }
+
+                        if (modified) {
                             modifyFile(source)
                         }
                 }
@@ -41,8 +65,19 @@ class FileModifier extends ConventionTask {
      *
      * @param clazz class to create instance [not null]
      */
-    def <T> void rule(Class<T> clazz) {
-        rules.add(clazz.newInstance())
+    def <T> Object rule(Class<T> clazz) {
+        if (Mode.DEBUG in modes) {
+            println "rule is called clazz $clazz "
+        }
+        def instance = clazz.newInstance()
+        if (Mode.DEBUG in modes) {
+            println "rule instance of class $clazz is created $instance "
+        }
+        rules.add(instance)
+        if (Mode.DEBUG in modes) {
+            println "rule instance $instance of class $clazz is added to rules list"
+        }
+        instance
     }
 
     /**
@@ -51,7 +86,31 @@ class FileModifier extends ConventionTask {
      * @param clazz class to create instance [not null]
      */
     def <T> void rule(Class<T> clazz, Closure<T> config) {
-        ConfigureUtil.configureUsing(config).execute(rule(clazz))
+        if (Mode.DEBUG in modes) {
+            println "rule method is called: clazz $clazz "
+        }
+        def newRule = rule(clazz)
+        ConfigureUtil.configureUsing(config).execute(newRule)
+        if (Mode.DEBUG in modes) {
+            println "rule instance $newRule is configured"
+        }
+    }
+
+    /**
+     * clears all set modes
+     * @return
+     */
+    FileModifier clearMode() {
+        this.modes.clear()
+        this
+    }
+
+    /**
+     * adds modes
+     * @param modes
+     */
+    void setMode(Mode ... modes) {
+        this.modes.addAll(modes)
     }
 
     boolean isModified(File file) {
@@ -67,10 +126,14 @@ class FileModifier extends ConventionTask {
     }
 
     boolean matchToAnyRule(String line, File file, int lineNo) {
-        rules.stream().anyMatch { lineMatches(it, line, file, lineNo) }
+        rules.stream().anyMatch { Object rule -> lineMatches(rule, line, file, lineNo) }
     }
 
     void modifyFile(File file) {
+        if (Mode.DEBUG in modes) {
+            println "modifying file $file.absolutePath"
+        }
+
         def temp = File.createTempFile("prefix", "suffix")
         temp.deleteOnExit()
 
@@ -95,25 +158,25 @@ class FileModifier extends ConventionTask {
     }
 
 
-    private static boolean lineMatches(Object rule, String line, File file, int lineNo) {
-        if (rule in ModifyRule) {
-            (rule as ModifyRule).lineMatches(line, file, lineNo)
+    static boolean lineMatches(Object rule, String line, File file, int lineNo) {
+        if (rule instanceof ModifyRule) {
+            line = (rule as ModifyRule).lineMatches(line, file, lineNo)
         }
 
-        if (rule in ModificationRule) {
-            (rule as ModificationRule).lineMatches(line)
+        if (rule instanceof ModificationRule) {
+            return (rule as ModificationRule).lineMatches(line)
         }
 
         false
     }
 
-    private static String substitution(Object rule, String line, File file) {
-        if (rule in ModificationRule) {
-            (rule as ModificationRule).substitution(line)
+    static String substitution(Object rule, String line, File file) {
+        if (rule instanceof ModificationRule) {
+            rule = (rule as ModificationRule).substitution(line)
         }
 
-        if (rule in ModifyRule) {
-            (rule as ModifyRule).substitution(line, file)
+        if (rule instanceof ModifyRule) {
+            return (rule as ModifyRule).substitution(line, file)
         }
 
         line
