@@ -43,13 +43,16 @@ class FileModifier extends ConventionTask {
                     File source ->
                         if (Mode.DEBUG in modes) {
                             println "inspecting file $source.absolutePath"
-                        }
-                        def modified = isModified(source)
-                        if (Mode.DEBUG in modes) {
-                            println "file $source.absolutePath modified = $modified"
+                            println ' '
+                            println ' '
                         }
 
-                        if (modified) {
+                        boolean modified = isModified(source)
+                        if (Mode.DEBUG in modes) {
+                            println "file $source.absolutePath modified => $modified"
+                        }
+
+                        if (modified as boolean) {
                             modifyFile(source)
                         }
                 }
@@ -109,7 +112,7 @@ class FileModifier extends ConventionTask {
      * adds modes
      * @param modes
      */
-    void setMode(Mode ... modes) {
+    void setMode(Mode... modes) {
         this.modes.addAll(modes)
     }
 
@@ -118,10 +121,12 @@ class FileModifier extends ConventionTask {
             reader ->
                 def line
                 int lineNo = 0
-                boolean result = true
+                boolean result = false
                 while ((line = reader.readLine()) != null) {
-                    result = result && matchToAnyRule(line, file, lineNo++)
+                    result = result || matchToAnyRule(line, file, lineNo)
+                    lineNo++
                 }
+                return result
         }
     }
 
@@ -142,8 +147,8 @@ class FileModifier extends ConventionTask {
                 new BufferedReader(new InputStreamReader(new FileInputStream(file))).withCloseable {
                     reader ->
                         int lineNo = 0
-                        def line = ''
-                        while ((line != reader.readLine()) != null) {
+                        def line
+                        while ((line = reader.readLine()) != null) {
                             String[] templine = [line]
                             if (matchToAnyRule(line, file, lineNo)) {
                                 rules.each { templine[0] = substitution(it, templine[0], file) }
@@ -159,27 +164,31 @@ class FileModifier extends ConventionTask {
 
 
     static boolean lineMatches(Object rule, String line, File file, int lineNo) {
+
+        boolean result = false
         if (rule instanceof ModifyRule) {
-            line = (rule as ModifyRule).lineMatches(line, file, lineNo)
+            result = result || ((rule as ModifyRule).lineMatches(line, file, lineNo) as boolean)
         }
 
         if (rule instanceof ModificationRule) {
-            return (rule as ModificationRule).lineMatches(line)
+            result = result || ((rule as ModificationRule).lineMatches(line) as boolean)
         }
 
-        false
+        return result
     }
 
     static String substitution(Object rule, String line, File file) {
+
+        String result = line
         if (rule instanceof ModificationRule) {
-            rule = (rule as ModificationRule).substitution(line)
+            result = (rule as ModificationRule).substitution(line)
         }
 
         if (rule instanceof ModifyRule) {
-            return (rule as ModifyRule).substitution(line, file)
+            result = (rule as ModifyRule).substitution(line, file)
         }
 
-        line
+        result
     }
 
 }
