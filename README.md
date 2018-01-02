@@ -56,7 +56,7 @@ A modification rule is applied using `rule` method of task.
 In example given below defined and applied DateTimeSubstitution rule searches #DATE `token` in project sources and replaces it with current time in format `dd.MM.yyyy`. 
 
 ```groovy 
-class DateTimeSubstitution implements ModificationRule {
+class DateTimeSubstitution implements ModifyRule {
     String find = '#DATE'
     String timeFormat = "dd.MM.yyyy"
 
@@ -71,16 +71,19 @@ class DateTimeSubstitution implements ModificationRule {
         this.timeFormat = timeFormat
     }
 
-    boolean lineMatches(String line) {
+    boolean lineMatches(String line, File file, int lineno) {
         find != null && line.contains(find)
     }
 
-    String substitution(String line) {
+    String substitution(String line, File file) {
         line.replaceAll(find, new SimpleDateFormat(timeFormat).format(new Date()))
     }
 }
 
-modifysources.rule(DateTimeSubstitution)
+modifysources.rule(DateTimeSubstitution) {
+   /* here goes the configuration block for the rule */
+   timeFormat = 'dd.MM.yyyy hh:mm:ss'
+}
 ```
 
 

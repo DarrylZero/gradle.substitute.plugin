@@ -1,6 +1,7 @@
 package com.steammachine.org.gradle.substitute.plugin.predefinedsubstitutions
 
-import com.steammachine.org.gradle.substitute.plugin.ModificationRule
+import com.steammachine.org.gradle.substitute.plugin.types.Api
+import com.steammachine.org.gradle.substitute.plugin.types.State
 
 /**
  *
@@ -9,13 +10,11 @@ import com.steammachine.org.gradle.substitute.plugin.ModificationRule
  * com.steammachine.org.gradle.substitute.plugin.predefinedsubstitutions.DirectSubstitution
  * com.steammachine.org.gradle.substitute.plugin.predefinedsubstitutions.DirectSubstitution
  */
-class DirectSubstitution implements ModificationRule {
+@Api(value = State.MAINTAINED)
+class DirectSubstitution extends DefaultSubstitution {
 
     String find
     String substitute
-
-    DirectSubstitution() {
-    }
 
     /**
      *
@@ -34,12 +33,17 @@ class DirectSubstitution implements ModificationRule {
     }
 
     @Override
-    boolean lineMatches(String line) {
-        substitute != null && find != null && line.contains(find)
+    boolean lineMatches(String line, File file, int lineNo) {
+        return substitute != null && find != null && line.contains(find)
     }
 
     @Override
-    String substitution(String line) {
-        line.replaceAll(find, substitute)
+    String substitution(String line, File file) {
+        return line.replaceAll(find, substitute)
+    }
+
+    @Override
+    String toString() {
+        return "DirectSubstitution(find=$find, substitute=$substitute)";
     }
 }
