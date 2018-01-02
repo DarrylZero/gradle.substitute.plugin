@@ -23,7 +23,6 @@ deploy:
     script: sh deploy.sh $repo_user $repo_password
 
     on:
-#      branch: /^release.*$/
       branch: release
 
 #cache:
