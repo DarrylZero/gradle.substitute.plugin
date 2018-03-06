@@ -80,13 +80,14 @@ task sourceJar(type: Jar) {
     }
 }
 
+def artefacts_publications_user = hasProperty('repo_user') ? repo_password : 'repo_user'
 def artefacts_publications_password = hasProperty('repo_password') ? repo_password : 'repo_password'
 
 publishing {
     repositories {
         maven {
             credentials {
-                username = deploy.user
+                username = artefacts_publications_user
                 password = artefacts_publications_password
             }
             url 'https://clojars.org/repo'

@@ -36,8 +36,6 @@ class FileModifierTest {
         FileModifierTest.class.getResourceAsStream('resource/resource.txt').withCloseable {
             Files.copy(it, file.toPath())
         }
-//        file = new File(dir, 'temp.txt')
-//        file.deleteOnExit()
 
         modifier.modifyFile(file)
 

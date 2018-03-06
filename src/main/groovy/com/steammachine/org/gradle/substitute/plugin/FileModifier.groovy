@@ -18,11 +18,10 @@ class FileModifier extends ConventionTask {
 
     final List<Object> rules = []
     final Set<Mode> modes = []
+    Action action = Action.CHECK
 
     @TaskAction
     void perform() {
-
-
         if (Mode.DEBUG in modes) {
             println 'source sets that are used'
             println ' '
@@ -37,31 +36,77 @@ class FileModifier extends ConventionTask {
             println "rules that are used $rules"
         }
 
-        project.sourceSets.each {
-            sourceset ->
-                sourceset.allSource.each {
-                    File source ->
-                        if (Mode.DEBUG in modes) {
-                            println "inspecting file $source.absolutePath"
-                            println ' '
-                            println ' '
-                        }
+        Action curAction = action
 
-                        boolean modified = isModified(source)
-                        if (Mode.DEBUG in modes) {
-                            println "file $source.absolutePath modified => $modified"
-                        }
+        def rawAction = System.getProperty('action')
+        if (rawAction != null) {
+            curAction = Action.find(rawAction)
+        }
 
-                        if (modified as boolean) {
-                            modifyFile(source)
+        switch (curAction){
+            case Action.CHECK:
+
+                List<File> result = []
+                project.sourceSets.each {
+                    sourceset ->
+                        sourceset.allSource.each {
+                            File source ->
+                                if (Mode.DEBUG in modes) {
+                                    println "inspecting file $source.absolutePath"
+                                    println ' '
+                                    println ' '
+                                }
+
+                                boolean modified = isModified(source)
+                                if (Mode.DEBUG in modes) {
+                                    println "file $source.absolutePath modified => $modified"
+                                }
+                                if (modified as boolean){
+                                    result.add source
+                                }
                         }
                 }
-        }
 
-        rules.stream().filter { it in FinalInspection }.map { it as FinalInspection }.forEachOrdered {
-            it.inspect()
+                result.stream().map {it.absolutePath}.forEachOrdered { println "file $it contains items"}
+                break
+
+            case Action.MODIFY:
+                project.sourceSets.each {
+                    sourceset ->
+                        sourceset.allSource.each {
+                            File source ->
+                                if (Mode.DEBUG in modes) {
+                                    println "inspecting file $source.absolutePath"
+                                    println ' '
+                                    println ' '
+                                }
+
+                                boolean modified = isModified(source)
+                                if (Mode.DEBUG in modes) {
+                                    println "file $source.absolutePath modified => $modified"
+                                }
+
+                                if (modified as boolean) {
+                                    modifyFile(source)
+                                }
+                        }
+                }
+
+                rules.stream().filter { it in FinalInspection }.map { it as FinalInspection }.forEachOrdered {
+                    it.inspect()
+                }
+                break
+
+            default:
+
+
         }
     }
+
+    void config(Closure<FileModifier> config) {
+        ConfigureUtil.configure(config, this)
+    }
+
 
     /**
      * Adds a simple rule,  that does not need any configuration
@@ -70,7 +115,7 @@ class FileModifier extends ConventionTask {
      */
     def <T> Object rule(Class<T> clazz) {
         if (Mode.DEBUG in modes) {
-            println "rule is called clazz $clazz "
+            println "rule clazz is called $clazz "
         }
         def instance = clazz.newInstance()
         if (Mode.DEBUG in modes) {
@@ -123,8 +168,7 @@ class FileModifier extends ConventionTask {
                 int lineNo = 0
                 boolean result = false
                 while ((line = reader.readLine()) != null) {
-                    result = result || matchToAnyRule(line, file, lineNo)
-                    lineNo++
+                    result = result || matchToAnyRule(line, file, lineNo++)
                 }
                 return result
         }

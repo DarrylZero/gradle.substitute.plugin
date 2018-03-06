@@ -24,6 +24,11 @@ class SubstitutePluginTest {
     }
 
     @Test
+    void testDependableTaskName() {
+        Assert.assertEquals('build', SubstitutePlugin.BUILD);
+    }
+
+    @Test
     void testWithDefaultProject() {
         Project project = ProjectBuilder.builder().build()
         Assert.assertNull(project.findProperty('modifysources'));

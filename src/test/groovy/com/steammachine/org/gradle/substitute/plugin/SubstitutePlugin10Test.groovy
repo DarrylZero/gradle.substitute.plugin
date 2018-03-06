@@ -12,9 +12,6 @@ import org.gradle.testkit.runner.GradleRunner;
 class SubstitutePlugin10Test {
 
 
-    @Test
-    void testNameIntegrity() {
-    }
 
     @Test
     @Ignore
