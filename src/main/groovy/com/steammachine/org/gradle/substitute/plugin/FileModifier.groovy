@@ -16,6 +16,7 @@ import java.nio.file.StandardCopyOption
 @Api(value = State.MAINTAINED)
 class FileModifier extends ConventionTask {
 
+    static final String ACTION = 'action'
     final List<Object> rules = []
     final Set<Mode> modes = []
     Action action = Action.CHECK
@@ -37,9 +38,15 @@ class FileModifier extends ConventionTask {
         }
 
         Action curAction = action
+        if (Mode.DEBUG in modes) {
+            println "current action $curAction"
+        }
 
-        def rawAction = System.getProperty('action')
+        def rawAction = System.getProperty(ACTION)
         if (rawAction != null) {
+            if (Mode.DEBUG in modes) {
+                println "using system property $ACTION"
+            }
             curAction = Action.find(rawAction)
         }
 
@@ -67,7 +74,10 @@ class FileModifier extends ConventionTask {
                         }
                 }
 
-                result.stream().map {it.absolutePath}.forEachOrdered { println "file $it contains items"}
+                if (!result.empty) {
+                    result.stream().map {it.absolutePath}.forEachOrdered { println "file $it contains items"}
+                    throw new IllegalStateException()
+                }
                 break
 
             case Action.MODIFY:
@@ -98,9 +108,20 @@ class FileModifier extends ConventionTask {
                 break
 
             default:
-
-
+                println "unknown action $rawAction"
         }
+    }
+
+    void setAction(Action action) {
+        this.action = action
+    }
+
+    void setAction(String action) {
+        def find = Action.find(action)
+        if (find == null) {
+            throw new IllegalArgumentException("unknown action $action")
+        }
+        setAction(find)
     }
 
     void config(Closure<FileModifier> config) {
@@ -115,7 +136,7 @@ class FileModifier extends ConventionTask {
      */
     def <T> Object rule(Class<T> clazz) {
         if (Mode.DEBUG in modes) {
-            println "rule clazz is called $clazz "
+            println "rule clazz is called $clazz.name "
         }
         def instance = clazz.newInstance()
         if (Mode.DEBUG in modes) {

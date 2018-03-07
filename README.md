@@ -4,7 +4,7 @@
 **About**
 
 Plugin adds one task named **modifysources** to the group **modification** of type com.steammachine.org.gradle.substitute.plugin.FileModifier to the project.
-Tasks of that type can be called independently, without plugin. A task scans project source sourceSets and replaces found `tokens` 
+Tasks of that type can be created and called independently, without plugin. A task scans project source sourceSets and replaces found `tokens` 
 with other `tokens` according to applied substitution rules.
 
 
@@ -100,7 +100,11 @@ com.steammachine.org.gradle.substitute.plugin.predefinedsubstitutions
 
 **Task properties**
 
-The task FileModifier (com.steammachine.org.gradle.substitute.plugin.FileModifier) does not have any other settings.
+The task FileModifier (com.steammachine.org.gradle.substitute.plugin.FileModifier) 
+  Has settings:
+     
+    
+   
 
 
 

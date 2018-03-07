@@ -20,7 +20,7 @@ class SubstitutePlugin implements Plugin<Project> {
             group = MODIFICATION
 
             if (project.tasks.findByName(BUILD) != null) {
-                it.dependsOn(BUILD)
+                project.tasks.findByName(BUILD).dependsOn TASK_NAME
             }
 
         }
